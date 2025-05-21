@@ -25,6 +25,12 @@ A Flask-based API for embedding and querying documents using LangChain and Chrom
    ```
 4. **Set environment variables (optional):**
    - Create a `.env` file to override defaults for `TEMP_FOLDER`, `CHROMA_PATH`, `COLLECTION_NAME`, `LLM_MODEL`, `TEXT_EMBEDDING_MODEL`.
+   - **Environment Variables Summary:**
+     - `TEMP_FOLDER`: Directory where temporary files (e.g., uploaded documents) are stored before processing.
+     - `CHROMA_PATH`: Path to the ChromaDB directory where document embeddings are persisted.
+     - `COLLECTION_NAME`: Name of the collection in ChromaDB used to store and retrieve document embeddings.
+     - `LLM_MODEL`: The name of the language model used for querying (e.g., "mistral").
+     - `TEXT_EMBEDDING_MODEL`: The model used for generating text embeddings (e.g., "nomic-embed-text").
 
 ## Setting up Ollama
 
