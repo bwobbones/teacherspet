@@ -105,7 +105,6 @@ curl --request POST \
 ## Notes
 
 - Embedded data and temporary files are stored locally and ignored by git.
-- Requires [Ollama](https://ollama.com/) for local LLM inference.
 
 ---
 
