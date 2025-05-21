@@ -9,7 +9,7 @@ from get_vector_db import get_vector_db
 
 TEMP_FOLDER = os.getenv('TEMP_FOLDER', './_temp')
 
-# Function to check if the uploaded file is allowed (only PDF files)
+# Function to check if the uploaded file is allowed (only .docx files)
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'docx'}
 
@@ -21,38 +21,31 @@ def save_file(file):
     filename = str(ts) + "_" + secure_filename(file.filename)
     file_path = os.path.join(TEMP_FOLDER, filename)
     file.save(file_path)
-
     return file_path
 
-# Function to load and split the data from the PDF file
+# Function to load and split the data from the .docx file
 def load_and_split_data(file_path):
-    # Load the PDF file and split the data into chunks
+    # Load the .docx file and split the data into chunks
     loader = DoclingLoader(file_path=file_path)
     data = loader.load()
-
-    filtered_data = []
-    # for doc in data:
     filtered_metadata = filter_complex_metadata(data)
-    # filtered_doc = Document(page_content=data.page_content, metadata=filtered_metadata)
-    # filtered_data.append(filtered_doc)
-
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=7500, chunk_overlap=100)
     chunks = text_splitter.split_documents(filtered_metadata)
-
     return chunks
 
-# Main function to handle the embedding process
-def embed(file):
+# Main function to handle the embedding process for a directory
+def embed(directory):
+    if not os.path.isdir(directory):
+        return False
 
-    # Check if the file is valid, save it, load and split the data, add to the database, and remove the temporary file
-    if file.filename != '' and file and allowed_file(file.filename):
-        file_path = save_file(file)
-        chunks = load_and_split_data(file_path)
-        db = get_vector_db()
-        db.add_documents(chunks)
-        db.persist()
-        os.remove(file_path)
+    success = False
+    for filename in os.listdir(directory):
+        if allowed_file(filename):
+            file_path = os.path.join(directory, filename)
+            chunks = load_and_split_data(file_path)
+            db = get_vector_db()
+            db.add_documents(chunks)
+            db.persist()
+            success = True
 
-        return True
-
-    return False
+    return success
