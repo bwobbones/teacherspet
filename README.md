@@ -41,6 +41,15 @@ The API will be available at `http://localhost:8080`.
 - Upload a `.docx` file to embed its content.
 - Form field: `file`
 
+**Sample curl command:**
+
+```bash
+curl --request POST \
+  --url http://localhost:8080/embed \
+  --header 'Content-Type: multipart/form-data' \
+  --form file=@/Users/bwobbones/<docname>.docx
+```
+
 ### POST `/query`
 
 - Query the embedded documents.
