@@ -41,6 +41,7 @@ def embed(directory):
     success = False
     for filename in os.listdir(directory):
         if allowed_file(filename):
+            print(f"Processing file: {filename}")
             file_path = os.path.join(directory, filename)
             chunks = load_and_split_data(file_path)
             db = get_vector_db()
