@@ -68,3 +68,9 @@ curl --request POST \
 
 - Embedded data and temporary files are stored locally and ignored by git.
 - Requires [Ollama](https://ollama.com/) for local LLM inference.
+
+---
+
+## Acknowledgements
+
+Special thanks to [Nasser Maronie](https://dev.to/nassermaronie/build-your-own-rag-app-a-step-by-step-guide-to-setup-llm-locally-using-ollama-python-and-chromadb-b12) for his excellent article on setting up a local RAG app with Ollama, Python, and ChromaDB, which was invaluable for this project.
