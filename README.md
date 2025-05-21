@@ -55,6 +55,15 @@ curl --request POST \
 - Query the embedded documents.
 - JSON body: `{ "query": "your question here" }`
 
+**Sample curl command:**
+
+```bash
+curl --request POST \
+  --url http://localhost:8080/query \
+  --header 'Content-Type: application/json' \
+  --data '{ "query": "Who is bwobbones?" }'
+```
+
 ## Notes
 
 - Embedded data and temporary files are stored locally and ignored by git.
