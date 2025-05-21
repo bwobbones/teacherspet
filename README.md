@@ -26,6 +26,38 @@ A Flask-based API for embedding and querying documents using LangChain and Chrom
 4. **Set environment variables (optional):**
    - Create a `.env` file to override defaults for `TEMP_FOLDER`, `CHROMA_PATH`, `COLLECTION_NAME`, `LLM_MODEL`, `TEXT_EMBEDDING_MODEL`.
 
+## Setting up Ollama
+
+Before running this app, you need to have an Ollama server running locally to provide the language model backend.
+
+1. **Install Ollama:**
+
+   - Visit [Ollama's download page](https://ollama.com/download) and follow the instructions for your operating system (macOS, Linux, or Windows).
+
+2. **Start the Ollama server:**
+
+   - After installation, start the Ollama server by running:
+     ```bash
+     ollama serve
+     ```
+   - This will start the Ollama server on your machine, typically at `http://localhost:11434`.
+
+3. **Pull a model (e.g., mistral):**
+
+   - You need to pull a model that matches your `.env` or default settings. For example:
+     ```bash
+     ollama pull mistral
+     ```
+   - You can pull other models as needed (see [Ollama's model library](https://ollama.com/library)).
+
+4. **Verify Ollama is running:**
+   - You can check if Ollama is running by visiting [http://localhost:11434](http://localhost:11434) or running:
+     ```bash
+     curl http://localhost:11434
+     ```
+
+Once Ollama is running and the required model is pulled, you can start the Flask app as described below.
+
 ## Running the App
 
 ```bash
