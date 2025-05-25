@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask, request, jsonify
-from embed import embed
+from embed import embed, save_file
 from query import query
 from get_vector_db import get_vector_db
 
@@ -23,7 +23,11 @@ def route_embed():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    embedded = embed(file)
+    # Save the file first
+    file_path = save_file(file)
+    
+    # Process the file
+    embedded = embed(file_path)
 
     if embedded:
         return jsonify({"message": "File embedded successfully"}), 200
