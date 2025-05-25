@@ -88,6 +88,20 @@ curl --request POST \
   --form file=@/Users/bwobbones/<docname>.docx
 ```
 
+### POST `/embed-directory`
+
+- Process all .docx files in a directory.
+- Form field: `directory`
+
+**Sample curl command:**
+
+```bash
+curl --request POST \
+  --url http://localhost:8080/embed-directory \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'directory=/path/to/your/directory'
+```
+
 ### POST `/query`
 
 - Query the embedded documents.
