@@ -53,25 +53,26 @@ def process_directory(directory_path):
     
     print(f"Processing directory: {directory_path}")
     
-    for filename in os.listdir(directory_path):
-        if not allowed_file(filename):
-            print(f"Skipping non-docx file: {filename}")
-            skipped_files.append(filename)
-            continue
+    for root, dirs, files in os.walk(directory_path):
+        for filename in files:
+            if not allowed_file(filename):
+                print(f"Skipping non-docx file: {filename}")
+                skipped_files.append(os.path.join(root, filename))
+                continue
+                
+            file_path = os.path.join(root, filename)
+            print(f"Processing file: {file_path}")
             
-        file_path = os.path.join(directory_path, filename)
-        print(f"Processing file: {filename}")
-        
-        try:
-            chunks = load_and_split_data(file_path)
-            db = get_vector_db()
-            db.add_documents(chunks)
-            db.persist()
-            processed_files.append(filename)
-            print(f"Successfully processed: {filename}")
-        except Exception as e:
-            print(f"Error processing {filename}: {str(e)}")
-            skipped_files.append(filename)
+            try:
+                chunks = load_and_split_data(file_path)
+                db = get_vector_db()
+                db.add_documents(chunks)
+                db.persist()
+                processed_files.append(file_path)
+                print(f"Successfully processed: {file_path}")
+            except Exception as e:
+                print(f"Error processing {file_path}: {str(e)}")
+                skipped_files.append(file_path)
     
     return {
         'success': len(processed_files) > 0,
