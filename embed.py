@@ -6,12 +6,16 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from get_vector_db import get_vector_db
+import warnings
+
+# Filter out the specific token length warning
+warnings.filterwarnings("ignore", message="Token indices sequence length is longer than the specified maximum sequence length")
 
 TEMP_FOLDER = os.getenv('TEMP_FOLDER', './_temp')
 
-# Function to check if the uploaded file is allowed (only .docx files)
+# Function to check if the uploaded file is allowed (.docx or .pdf files)
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'docx'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'docx', 'pdf'}
 
 # Function to save the uploaded file to the temporary folder
 def save_file(file):
@@ -25,13 +29,41 @@ def save_file(file):
 
 # Function to load and split the data from the .docx file
 def load_and_split_data(file_path):
-    # Load the .docx file and split the data into chunks
-    loader = DoclingLoader(file_path=file_path)
-    data = loader.load()
-    filtered_metadata = filter_complex_metadata(data)
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=7500, chunk_overlap=100)
-    chunks = text_splitter.split_documents(filtered_metadata)
-    return chunks
+    try:
+        # Load the .docx file and split the data into chunks
+        loader = DoclingLoader(file_path=file_path)
+        data = loader.load()
+        
+        # Pre-split large documents before filtering metadata
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=500,
+            chunk_overlap=50,
+            length_function=len,
+            separators=["\n\n", "\n", ".", " ", ""]
+        )
+        
+        # Split the raw data first
+        pre_chunks = text_splitter.split_documents(data)
+        print(f"Pre-split document into {len(pre_chunks)} chunks")
+        
+        # Now filter metadata for each chunk
+        filtered_chunks = []
+        for chunk in pre_chunks:
+            filtered_metadata = filter_complex_metadata([chunk])
+            filtered_chunks.extend(filtered_metadata)
+        
+        # Debug logging for chunk sizes
+        for i, chunk in enumerate(filtered_chunks):
+            print(f"Chunk {i+1} length: {len(chunk.page_content)} characters")
+        
+        print(f"Final document split into {len(filtered_chunks)} chunks")
+        return filtered_chunks
+    except Exception as e:
+        if "Token indices sequence length is longer than the specified maximum sequence length" in str(e):
+            print("Warning: Document exceeds token limit, but will be processed in chunks")
+            # Continue processing as the chunks will be within limits
+            return load_and_split_data(file_path)
+        raise  # Re-raise if it's a different error
 
 # Main function to handle the embedding process
 def embed(file):
