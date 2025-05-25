@@ -16,7 +16,16 @@ app = Flask(__name__)
 @app.route('/embed', methods=['POST'])
 def route_embed():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        # Check if a directory path was provided
+        if 'directory' in request.form:
+            directory = request.form['directory']
+            if os.path.isdir(directory):
+                embedded = embed(directory)
+                if embedded:
+                    return jsonify({"message": "Directory embedded successfully"}), 200
+                return jsonify({"error": "Directory embedded unsuccessfully"}), 400
+            return jsonify({"error": "Invalid directory path"}), 400
+        return jsonify({"error": "No file or directory provided"}), 400
 
     file = request.files['file']
 
