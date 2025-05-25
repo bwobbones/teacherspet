@@ -74,5 +74,17 @@ def route_clear():
     except Exception as e:
         return jsonify({"error": f"Failed to clear data: {str(e)}"}), 400
 
+@app.route('/count', methods=['GET'])
+def route_count():
+    try:
+        db = get_vector_db()
+        count = db._collection.count()
+        return jsonify({
+            "message": f"Found {count} documents in the database",
+            "document_count": count
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to count documents: {str(e)}"}), 400
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
