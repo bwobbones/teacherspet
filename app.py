@@ -59,5 +59,20 @@ def route_query():
 
     return jsonify({"error": "Something went wrong"}), 400
 
+@app.route('/clear', methods=['POST'])
+def route_clear():
+    try:
+        db = get_vector_db()
+        # Count documents before clearing
+        count = db._collection.count()
+        db.delete_collection()
+        db = get_vector_db()  # Recreate the collection
+        return jsonify({
+            "message": f"Successfully cleared {count} documents",
+            "documents_cleared": count
+        }), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to clear data: {str(e)}"}), 400
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
