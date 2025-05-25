@@ -32,8 +32,13 @@ def get_prompt():
 # Main function to handle the query process
 def query(input):
     if input:
-        # Initialize the language model with the specified model name
-        llm = ChatOllama(model=LLM_MODEL)
+        # Initialize the language model with the specified model name and parameters
+        llm = ChatOllama(
+            model=LLM_MODEL,
+            temperature=0.7,
+            num_ctx=4096,  # Context window size
+            num_thread=4   # Number of CPU threads to use
+        )
         # Get the vector database instance
         db = get_vector_db()
         # Get the prompt templates
