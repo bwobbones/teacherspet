@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from flask import Flask, request, jsonify
-from embed import embed
+from embed import embed, process_directory
 from query import query
 from get_vector_db import get_vector_db
 
@@ -29,6 +29,25 @@ def route_embed():
         return jsonify({"message": "File embedded successfully"}), 200
 
     return jsonify({"error": "File embedded unsuccessfully"}), 400
+
+@app.route('/embed-directory', methods=['POST'])
+def route_embed_directory():
+    if 'directory' not in request.form:
+        return jsonify({"error": "No directory path provided"}), 400
+
+    directory = request.form['directory']
+    if not os.path.isdir(directory):
+        return jsonify({"error": "Invalid directory path"}), 400
+
+    results = process_directory(directory)
+    if results['success']:
+        return jsonify({
+            "message": "Directory processed successfully",
+            "processed_files": results['processed_files'],
+            "skipped_files": results['skipped_files']
+        }), 200
+
+    return jsonify({"error": "Directory processing failed"}), 400
 
 @app.route('/query', methods=['POST'])
 def route_query():

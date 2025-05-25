@@ -45,3 +45,36 @@ def embed(file):
         os.remove(file_path)
         return True
     return False
+
+# Function to process all .docx files in a directory
+def process_directory(directory_path):
+    processed_files = []
+    skipped_files = []
+    
+    print(f"Processing directory: {directory_path}")
+    
+    for filename in os.listdir(directory_path):
+        if not allowed_file(filename):
+            print(f"Skipping non-docx file: {filename}")
+            skipped_files.append(filename)
+            continue
+            
+        file_path = os.path.join(directory_path, filename)
+        print(f"Processing file: {filename}")
+        
+        try:
+            chunks = load_and_split_data(file_path)
+            db = get_vector_db()
+            db.add_documents(chunks)
+            db.persist()
+            processed_files.append(filename)
+            print(f"Successfully processed: {filename}")
+        except Exception as e:
+            print(f"Error processing {filename}: {str(e)}")
+            skipped_files.append(filename)
+    
+    return {
+        'success': len(processed_files) > 0,
+        'processed_files': processed_files,
+        'skipped_files': skipped_files
+    }
