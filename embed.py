@@ -33,29 +33,15 @@ def load_and_split_data(file_path):
     chunks = text_splitter.split_documents(filtered_metadata)
     return chunks
 
-# Main function to handle the embedding process for a file or directory
-def embed(path):
-    if os.path.isfile(path):
-        # Process single file
-        if allowed_file(path):
-            print(f"Processing file: {path}")
-            chunks = load_and_split_data(path)
-            db = get_vector_db()
-            db.add_documents(chunks)
-            db.persist()
-            return True
-        return False
-    elif os.path.isdir(path):
-        # Process directory
-        success = False
-        for filename in os.listdir(path):
-            if allowed_file(filename):
-                print(f"Processing file: {filename}")
-                file_path = os.path.join(path, filename)
-                chunks = load_and_split_data(file_path)
-                db = get_vector_db()
-                db.add_documents(chunks)
-                db.persist()
-                success = True
-        return success
+# Main function to handle the embedding process
+def embed(file):
+    # Check if the file is valid, save it, load and split the data, add to the database, and remove the temporary file
+    if file.filename != '' and file and allowed_file(file.filename):
+        file_path = save_file(file)
+        chunks = load_and_split_data(file_path)
+        db = get_vector_db()
+        db.add_documents(chunks)
+        db.persist()
+        os.remove(file_path)
+        return True
     return False
